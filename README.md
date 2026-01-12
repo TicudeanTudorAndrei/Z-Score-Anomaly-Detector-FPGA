@@ -63,6 +63,10 @@ The Z-Score method identifies anomalies by measuring how far a data point deviat
 * Effective for detecting **point anomalies (spikes)**
 * Suitable for hardware implementation
 * Assumes Gaussian-like data distributions
+  
+  * Approximately 68% of the values lie within the interval [μ − σ, μ + σ]
+  * Approximately 95% of the values lie within the interval [μ − 2σ, μ + 2σ]
+  * Approximately 99.7% of the values lie within the interval [μ − 3σ, μ + 3σ]
 
 ![Gauss](images/gauss.jpg)
 
@@ -178,8 +182,20 @@ Validation was performed using predefined datasets with manually computed Z-Scor
 ### Results
 
 * High detection accuracy for point anomalies
+
+> Header: Expected Value / Obtained Value / Absolute Difference
+
+![Validation](images/validation.jpg)
+
 * Small numerical errors (~1e-6) due to 32-bit vs 64-bit floating-point precision
-* Correct classification of normal vs anomalous data points
+
+> Header: Type of Anomaly / True Positive / False Positive / True Negative / False Negative / Precision / Recall / Accuracy / F1 Score
+
+![Metrics_Validation](images/metrics_validation.jpg)
+
+* Correct classification of normal vs anomalous data points (mainly for spike anomalies)
+
+![Comparison](images/comparison.jpg)
 
 ---
 
@@ -188,12 +204,17 @@ Validation was performed using predefined datasets with manually computed Z-Scor
 ### FPGA Platforms
 
 * **Zynq UltraScale**
+
+![Zynq](images/zynq.jpg)
+
 * **Nexys A7-100T**
+
+![Nexys](images/nexys.jpg)
 
 Comparisons include:
 
-* Replicated single-stream architectures
-* Optimized multi-stream pipeline architecture
+* Resource utilisation for replicated single-stream architectures vs optimized multi-stream pipeline architecture
+* Amount of circuit instances that can fit on one FPGA
 
 Results show superior scalability and resource utilization for the multi-stream approach.
 
@@ -216,6 +237,8 @@ While MCUs scale reasonably for simple tasks, they suffer from increased latency
 * Higher throughput compared to MCU solutions
 * Energy consumption remains comparable when normalized to performance
 
+![Performance](images/performance.jpg)
+
 ---
 
 ## Implementation Details
@@ -234,25 +257,6 @@ While MCUs scale reasonably for simple tasks, they suffer from increased latency
 * FPGA boards: Zynq UltraScale, Nexys A7-100T
 * MCU boards: ATmega328P, ESP8266
 * GUI: Python + Tkinter
-
----
-
-## MCU Reference Implementation
-
-The MCU-based implementation is structured as follows:
-
-* `setup`: initializes serial communication and CPU frequency
-* `updateWindow`: manages sliding window updates
-* `zScore`: computes mean, standard deviation, and anomaly detection
-* `loop`: generates test data, injects anomalies, measures execution time
-
-Reported metrics include:
-
-* Stream ID
-* Z-Score value
-* Anomaly status
-* Execution latency
-* Average execution time
 
 ---
 
