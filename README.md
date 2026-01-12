@@ -55,7 +55,7 @@ This project focuses on the **FPGA-based centralized approach**.
 
 The Z-Score method identifies anomalies by measuring how far a data point deviates from the mean in terms of standard deviations.
 
-![Z-Score](images/alg_inital.jpg)
+![Z-Score](images/alg_initial.jpg)
 
 ### Advantages
 
