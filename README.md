@@ -63,12 +63,12 @@ The Z-Score method identifies anomalies by measuring how far a data point deviat
 * Effective for detecting **point anomalies (spikes)**
 * Suitable for hardware implementation
 * Assumes Gaussian-like data distributions
-  
+
+![Gauss](images/gauss.jpg)
+
   * Approximately 68% of the values lie within the interval [μ − σ, μ + σ]
   * Approximately 95% of the values lie within the interval [μ − 2σ, μ + 2σ]
   * Approximately 99.7% of the values lie within the interval [μ − 3σ, μ + 3σ]
-
-![Gauss](images/gauss.jpg)
 
 ---
 
@@ -94,7 +94,7 @@ The Z-Score method identifies anomalies by measuring how far a data point deviat
 
 ![FSM](images/fsm.jpg)
 
-* Precision-overflow trade-off via bounded window size
+* Precision-overflow trade-off via bounded window size (up to 64 sample size)
 
 ---
 
@@ -183,17 +183,17 @@ Validation was performed using predefined datasets with manually computed Z-Scor
 
 * High detection accuracy for point anomalies
 
-> Header: Expected Value / Obtained Value / Absolute Difference
-
-![Validation](images/validation.jpg)
-
-* Small numerical errors (~1e-6) due to 32-bit vs 64-bit floating-point precision
-
 > Header: Type of Anomaly / True Positive / False Positive / True Negative / False Negative / Precision / Recall / Accuracy / F1 Score
 
 ![Metrics_Validation](images/metrics_validation.jpg)
 
-* Correct classification of normal vs anomalous data points (mainly for spike anomalies)
+* Small numerical errors (~1e-6) due to 32-bit vs 64-bit floating-point precision
+
+> Header: Expected Value / Obtained Value / Absolute Difference
+
+![Validation](images/validation.jpg)
+
+* Correct classification of normal vs anomalous data points (mainly for spike anomalies, as Z-Score is an outlier anomaly detection method)
 
 ![Comparison](images/comparison.jpg)
 
@@ -211,12 +211,16 @@ Validation was performed using predefined datasets with manually computed Z-Scor
 
 ![Nexys](images/nexys.jpg)
 
+> The 4 left diagrams measure the % utilization of a resource type (FF, LUT, DSP, BRAM) available on the specific FPGA (Oy) in relation with the number of streams (Ox)
+
+> The right column diagram shows how many instances of a Z-Score circuit can fit on a single FPGA device (Naive (blue) - replicated single-stream circuit vs Multi-Flux (green) - using the multi-stream architecture with shared computation modules)
+
 Comparisons include:
 
-* Resource utilisation for replicated single-stream architectures vs optimized multi-stream pipeline architecture
+* Resource utilization for replicated single-stream architectures vs. optimized multi-stream pipeline architecture
 * Amount of circuit instances that can fit on one FPGA
 
-Results show superior scalability and resource utilization for the multi-stream approach.
+Results show superior (double) scalability and resource utilization for the multi-stream approach (40 vs. 87 for Zynq and 11 vs. 24 for Nexys)
 
 ---
 
@@ -233,11 +237,25 @@ While MCUs scale reasonably for simple tasks, they suffer from increased latency
 
 ## Performance and Energy Efficiency
 
+![Performance](images/performance.jpg)
+
+> First Table Header: Platform (FPGAs, MCUs and theoretical extrapolated values for MCUs running at 200 Mhz) / Frequency (Mhz) / Method (MCU optimisation with liked list instead of array for easier window sliding) / Latency (clock cycles) S = nr. of streams / Throughput (KSample / second)
+
+> Second Table Header: Platform / Frequency (Mhz) / Energy Consumption (W)
+
 * FPGA multi-stream implementation achieves significantly lower latency
 * Higher throughput compared to MCU solutions
 * Energy consumption remains comparable when normalized to performance
 
-![Performance](images/performance.jpg)
+---
+
+## Conclusions
+
+* FPGAs are highly suitable for **multi-stream anomaly detection at the edge**
+* Multi-stream architectures maximize hardware utilization
+* FPGA solutions provide lower latency and higher throughput than MCUs
+* Energy efficiency remains competitive when normalized by performance
+* MCUs remain relevant for simpler, low-demand applications
 
 ---
 
@@ -303,13 +321,3 @@ A Python-based GUI was developed for demonstration and validation:
 * **Appendix 7:** Performance and scalability metrics formulas
 
 ![Metrics](images/metrics.jpg)
-
----
-
-## Conclusions
-
-* FPGAs are highly suitable for **multi-stream anomaly detection at the edge**
-* Multi-stream architectures maximize hardware utilization
-* FPGA solutions provide lower latency and higher throughput than MCUs
-* Energy efficiency remains competitive when normalized by performance
-* MCUs remain relevant for simpler, low-demand applications
